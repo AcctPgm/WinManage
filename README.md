@@ -7,8 +7,8 @@ particular task at the same time, etc. There are other programs out there that
 help with this, but most of them do a lot more than I need, or want. Most 
 modern programs resart at their last open position automatically so I don't 
 need my  window location manager to position new windows when programs start 
-or open a new window. Rather, if something happens to change that 'breaks' 
-my setup, such as closing a program's windows in the wrong order to move its 
-default position or a pdf coded to move the Acrobat window (imho a pointless 
+or open a new window. Rather, if something happens that 'breaks' my setup, 
+such as closing a program's windows in the wrong order to move its default 
+position or a pdf coded to move the Acrobat window (imho a pointless 
 'feature' that shouldn't exist), I just want to be able to restore that one 
 program's window to my preferred location.
