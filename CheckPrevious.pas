@@ -27,7 +27,7 @@ begin
 
   MappingName :=StringReplace(ParamStr(0),'\','',[rfReplaceAll, rfIgnoreCase]);
 
-  MappingHandle := CreateFileMapping($FFFFFFFF,
+  MappingHandle := CreateFileMapping(INVALID_HANDLE_VALUE,
                                      nil,
                                      PAGE_READWRITE,
                                      0,

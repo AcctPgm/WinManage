@@ -318,7 +318,7 @@ object frmAbout: TfrmAbout
   }
   OnClose = FormClose
   OnShow = FormShow
-  LCLVersion = '1.6.0.4'
+  LCLVersion = '2.0.0.4'
   object btnOK: TButton
     Left = 128
     Height = 25
@@ -335,12 +335,12 @@ object frmAbout: TfrmAbout
     Height = 136
     Top = 16
     Width = 280
-    Caption = 'WinManage - a lightweight utility that allows YOU to manage and control the size and screen location of your program windows.'#13#10#13#10'Copyright (c) 2013-2016 by Ken Parker, all rights reserved'#13#10#13#10'Use is at your own risk. There are no warranties or guaranties, express or implied.'
+    Caption = 'WinManage - a lightweight utility that allows YOU to manage and control the size and screen location of your program windows.'#13#10#13#10'Copyright (c) 2013-2019 by Ken Parker, all rights reserved'#13#10#13#10'Use is at your own risk. There are no warranties or guaranties, express or implied.'
     TabOrder = 1
   end
   object lblVersion: TLabel
     Left = 24
-    Height = 13
+    Height = 15
     Top = 160
     Width = 25
     Caption = '?????'

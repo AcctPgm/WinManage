@@ -17,7 +17,7 @@ implementation
 
 function GetAppFolder: string;
 begin
-  Result := sysutils.GetEnvironmentVariable('LocalAppData');
+  Result := {sysutils.}GetEnvironmentVariable('LocalAppData');
   if length(Result) = 0 then
     Result := sysutils.GetEnvironmentVariable('AppData');
 end;

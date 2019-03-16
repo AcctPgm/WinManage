@@ -6,7 +6,8 @@ interface
 
 uses
   Classes, SysUtils, Windows, JwaTlHelp32, JwaPsAPI, FileUtil,
-  TypeUnit;
+  TypeUnit,
+  Dialogs;
 
 function EnumWindowsToStrList(handle:hwnd; lP:LPARAM):LongBool;stdcall;
 function ProcessFileName(PID: DWORD): string;
@@ -17,6 +18,8 @@ implementation
 function EnumWindowsToStrList(handle:hwnd; lP:LPARAM):LongBool;stdcall;
 var
   sl: TStringList;
+  className: array [0..255] of char;
+  sClassName: string;
   PID: DWord;
   rect: TRect;
   text: array [0..255] of char;
@@ -28,32 +31,40 @@ begin
     (GetParent(handle) = 0)          and                      //Does not have any parent
     (GetWindowText(handle, text, sizeOf(text) - 1) <> 0) then
   begin
-    GetWindowRect(handle, rect);
-    if (rect.Top >= 0) and ((rect.Right - rect.Left) > 0) then
+    // filter out Win8+ 'Modern App' windows that aren't real (visible) windows
+    GetClassName(handle, className, sizeOf(className));
+    sClassName := className;
+    if not ((sClassName = 'ApplicationFrameWindow') or
+    	 (sClassName = 'Windows.UI.Core.CoreWindow') or
+       (sClassName = 'SystemSettings')) then
     begin
-      tw := TWinfo.Create;
-
-      with tw do
+      GetWindowRect(handle, rect);
+      if (rect.Top >= 0) and ((rect.Right - rect.Left) > 0) then
       begin
-        wName := GetFileNameFromHandle(handle);
-        wWinTitle := text;
+        tw := TWinfo.Create;
 
-        wTop := rect.Top;
-        wLeft := rect.Left;
-        wBottom := rect.Bottom;
-        wRight := rect.Right;
-        wHeight := wBottom - wTop;
-        wWidth := wRight - wLeft;
-        wHandle := handle;
+        with tw do
+        begin
+          wName := GetFileNameFromHandle(handle);
+          wWinTitle := text;
 
-        GetWindowThreadProcessID(Handle, @PID);
-        wProgPath := ProcessFileName(PID);
-        if length(wProgPath) = 0 then
-          wProgPath := Copy(wName, 1, length(wName));
+          wTop := rect.Top;
+          wLeft := rect.Left;
+          wBottom := rect.Bottom;
+          wRight := rect.Right;
+          wHeight := wBottom - wTop;
+          wWidth := wRight - wLeft;
+          wHandle := handle;
+
+          GetWindowThreadProcessID(Handle, @PID);
+          wProgPath := ProcessFileName(PID);
+          if length(wProgPath) = 0 then
+            wProgPath := Copy(wName, 1, length(wName));
+        end;
+
+        sl := TStringList(lp);
+        sl.AddObject(tw.wName + #009 + tw.wWinTitle, tw);
       end;
-
-      sl := TStringList(lp);
-      sl.AddObject(tw.wName + #009 + tw.wWinTitle, tw);
     end;
   end;
 
@@ -101,7 +112,7 @@ begin
 	begin
 		if aProcessEntry32.th32ProcessID = PID then
 		begin
-			Result := SysToUTF8(aProcessEntry32.szExeFile);
+			Result := aProcessEntry32.szExeFile;
 			break;
 		end;
 		ContinueLoop := Process32Next(aSnapShotHandle, aProcessEntry32);
