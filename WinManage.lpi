@@ -19,8 +19,8 @@
     </i18n>
     <VersionInfo>
       <UseVersionInfo Value="True"/>
-      <MinorVersionNr Value="4"/>
-      <StringTable Comments="Freeware" FileDescription="Manage window sizes and placement" LegalCopyright="(c) 2016 by Kenneth Parker" ProductName="WinManage"/>
+      <MinorVersionNr Value="6"/>
+      <StringTable Comments="Freeware" FileDescription="Manage window sizes and placement" LegalCopyright="(c) 2019 by Kenneth Parker" ProductName="WinManage"/>
     </VersionInfo>
     <BuildModes Count="1">
       <Item1 Name="Default" Default="True"/>

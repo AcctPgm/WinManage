@@ -14,18 +14,17 @@ type
     RunCounter : integer;
   end;
 
+const
+  MappingName = 'df85dfdd-6352-42c7-b578-851cad213f7e';
+
 var
   MappingHandle: THandle;
   InstanceInfo: PInstanceInfo;
-  MappingName : string;
-
   RemoveMe : boolean = True;
 
 function RestoreIfRunning(const AppHandle : THandle; MaxInstances : integer = 1) : boolean;
 begin
   Result := True;
-
-  MappingName :=StringReplace(ParamStr(0),'\','',[rfReplaceAll, rfIgnoreCase]);
 
   MappingHandle := CreateFileMapping(INVALID_HANDLE_VALUE,
                                      nil,
