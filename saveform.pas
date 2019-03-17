@@ -81,7 +81,7 @@ begin
   if RememberFormPositions then
   begin
     try
-      MyIni := TIniFile.Create(GetAppFolder + '\' + IniFolderName + '\' + IniFileName);
+      MyIni := TIniFile.Create(GetIniFileName);
       Top := MyIni.ReadInteger('Options', 'SaveFormTop', Top);
       Left := MyIni.ReadInteger('Options', 'SaveFormLeft', Left);
     finally
@@ -103,13 +103,8 @@ begin
   // Save the form position
   if RememberFormPositions and (Left <> InitialLeft) and (Top <> InitialTop) then
   begin
-    FullIniPath := GetAppFolder + '\' + IniFolderName;
-    if not DirectoryExists(FullIniPath) then
-      if not CreateDir(FullIniPath) then
-        Exit;
-
     try
-      MyIni := TIniFile.Create(FullIniPath + '\' + IniFileName);
+      MyIni := TIniFile.Create(GetIniFileName);
       MyIni.WriteInteger('Options', 'SaveFormTop', Top);
       MyIni.WriteInteger('Options', 'SaveFormLeft', Left);
     finally

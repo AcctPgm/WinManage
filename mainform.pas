@@ -123,7 +123,7 @@ begin
   if RememberFormPositions then
   begin
     try
-      MyIni := TIniFile.Create(GetAppFolder + '\' + IniFolderName + '\' + IniFileName);
+      MyIni := TIniFile.Create(GetIniFileName);
       Top := MyIni.ReadInteger('Options', 'MainFormTop', Top);
       Left := MyIni.ReadInteger('Options', 'MainFormLeft', Left);
     finally
@@ -163,13 +163,8 @@ begin
   // Save the form position
   if RememberFormPositions and (Left <> InitialLeft) and (Top <> InitialTop) then
   begin
-    FullIniPath := GetAppFolder + '\' + IniFolderName;
-    if not DirectoryExists(FullIniPath) then
-      if not CreateDir(FullIniPath) then
-        Exit;
-
     try
-      MyIni := TIniFile.Create(FullIniPath + '\' + IniFileName);
+      MyIni := TIniFile.Create(GetIniFileName);
       MyIni.WriteInteger('Options', 'MainFormTop', Top);
       MyIni.WriteInteger('Options', 'MainFormLeft', Left);
     finally
@@ -333,7 +328,7 @@ begin
   mnuGridMenu.Items.Add(mniItem);
 
   try
-    MyIni := TIniFile.Create(GetAppFolder + '\' + IniFolderName + '\' + IniFileName);
+    MyIni := TIniFile.Create(GetIniFileName);
     Sections := TStringList.Create;
 
     MyIni.ReadSections(Sections);
@@ -437,13 +432,8 @@ var
   Section: string;
   Sections: TStringList;
 begin
-  FullIniPath := GetAppFolder + '\' + IniFolderName;
-  if not DirectoryExists(FullIniPath) then
-    if not CreateDir(FullIniPath) then
-      Exit;
-
   try
-    MyIni := TIniFile.Create(FullIniPath + '\' + IniFileName);
+    MyIni := TIniFile.Create(GetIniFileName);
 
     Sections := TStringList.Create;
     MyIni.ReadSections(Sections);
@@ -475,6 +465,7 @@ begin
     begin
       Close;
 
+      ProgPath := TWinfo(sgdProgs.Objects[0, sgdProgs.Row]).wProgPath;
       Section := ProgPath + ';' + IntToStr(MaxItem + 1);
       MyIni.WriteString(Section, 'Comment', frmSaveForm.GetComment);
 

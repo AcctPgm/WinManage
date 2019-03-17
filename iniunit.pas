@@ -5,21 +5,40 @@ unit IniUnit;
 interface
 
 uses
-  Classes, SysUtils;
+  Classes, SysUtils, StrUtils,
+  Dialogs;
 
-function GetAppFolder: string;
+function GetIniFileName: string;
 
 const
   IniFileName = 'WinManage.ini';
-  IniFolderName = 'WinManage';
+  IniDefaultFolder = 'WinManage';
 
 implementation
 
-function GetAppFolder: string;
+function GetIniFileName: string;
 begin
-  Result := {sysutils.}GetEnvironmentVariable('LocalAppData');
+  // Default path is the default folder name under the AppData folder
+  Result := GetEnvironmentVariable('LocalAppData') + '\' + IniDefaultFolder;
   if length(Result) = 0 then
-    Result := sysutils.GetEnvironmentVariable('AppData');
+    Result := sysutils.GetEnvironmentVariable('AppData') + '\' + IniDefaultFolder;
+
+  // But use folder specified on the comment line, if any
+  if ParamCount > 0 then
+  begin
+    if DirectoryExists(ParamStr(1)) then
+      Result := ParamStr(1)
+  	else if CreateDir(ParamStr(1)) then
+      Result := ParamStr(1);
+  end;
+
+	// Ensure the path ends in a \
+	if AnsiRightStr(Result, 1) <> '\' then
+  	 Result := Result + '\';
+
+  // Use standard ini file name to avoid overwriting a system file or anything
+  // like that
+  Result := Result + IniFileName;
 end;
 
 end.

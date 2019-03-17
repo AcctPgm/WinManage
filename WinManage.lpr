@@ -3,9 +3,6 @@ program WinManage;
 {$mode objfpc}{$H+}
 
 uses
-  {$IFDEF UNIX}{$IFDEF UseCThreads}
-  cthreads,
-  {$ENDIF}{$ENDIF}
   Interfaces, // this includes the LCL widgetset
   Forms,
   MainForm, TypeUnit, WindowFuncs, IniUnit, About, Options, SaveForm,
@@ -18,6 +15,8 @@ var
 
 begin
   RequireDerivedFormResource := True;
+
+  // Check whether the program is already running - don't run a second instance
   hdl := GetCurrentProcess;
   if not CheckPrevious.RestoreIfRunning(hdl, 1) then
   begin

@@ -207,34 +207,34 @@ object frmSaveForm: TfrmSaveForm
   }
   OnClose = FormClose
   OnShow = FormShow
-  LCLVersion = '1.0.12.0'
+  LCLVersion = '2.0.0.4'
   object Label1: TLabel
     Left = 24
-    Height = 14
+    Height = 15
     Top = 24
-    Width = 45
+    Width = 49
     Caption = 'Program:'
     ParentColor = False
   end
   object lblProgram: TLabel
     Left = 97
-    Height = 14
+    Height = 15
     Top = 24
-    Width = 51
+    Width = 59
     Caption = 'lblProgram'
     ParentColor = False
   end
   object Label2: TLabel
     Left = 24
-    Height = 14
+    Height = 15
     Top = 56
-    Width = 50
+    Width = 57
     Caption = 'Comment:'
     ParentColor = False
   end
   object ediComment: TEdit
     Left = 97
-    Height = 21
+    Height = 23
     Top = 49
     Width = 176
     MaxLength = 32
@@ -243,23 +243,23 @@ object frmSaveForm: TfrmSaveForm
   end
   object Label3: TLabel
     Left = 24
-    Height = 14
+    Height = 15
     Top = 80
-    Width = 24
+    Width = 23
     Caption = 'Left:'
     ParentColor = False
   end
   object lblLeft: TLabel
     Left = 97
-    Height = 14
+    Height = 15
     Top = 80
-    Width = 30
+    Width = 33
     Caption = 'lblLeft'
     ParentColor = False
   end
   object Label4: TLabel
     Left = 24
-    Height = 14
+    Height = 15
     Top = 104
     Width = 23
     Caption = 'Top:'
@@ -267,41 +267,41 @@ object frmSaveForm: TfrmSaveForm
   end
   object lblTop: TLabel
     Left = 97
-    Height = 14
+    Height = 15
     Top = 104
-    Width = 29
+    Width = 33
     Caption = 'lblTop'
     ParentColor = False
   end
   object Label5: TLabel
     Left = 24
-    Height = 14
+    Height = 15
     Top = 128
-    Width = 33
+    Width = 35
     Caption = 'Width:'
     ParentColor = False
   end
   object lblWidth: TLabel
     Left = 97
-    Height = 14
+    Height = 15
     Top = 128
-    Width = 39
+    Width = 45
     Caption = 'lblWidth'
     ParentColor = False
   end
   object Label6: TLabel
     Left = 24
-    Height = 14
+    Height = 15
     Top = 152
-    Width = 36
+    Width = 39
     Caption = 'Height:'
     ParentColor = False
   end
   object lblHeight: TLabel
     Left = 97
-    Height = 14
+    Height = 15
     Top = 152
-    Width = 42
+    Width = 49
     Caption = 'lblHeight'
     ParentColor = False
   end
