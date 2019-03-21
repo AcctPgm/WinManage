@@ -31,7 +31,18 @@ type
     mTag: integer;
   end;
 
+var
+  colName, colTitle, colPosition, colSize : longint;
+
 implementation
+
+initialization
+begin
+	colName := 1;
+  colTitle := 2;
+  colPosition := 3;
+  colSize := 4;
+end;
 
 end.
 

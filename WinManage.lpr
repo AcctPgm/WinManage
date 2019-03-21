@@ -4,7 +4,7 @@ program WinManage;
 
 uses
   Interfaces, // this includes the LCL widgetset
-  Forms,
+  Forms, Dialogs,
   MainForm, TypeUnit, WindowFuncs, IniUnit, About, Options, SaveForm,
   Windows, CheckPrevious;
 
@@ -18,7 +18,9 @@ begin
 
   // Check whether the program is already running - don't run a second instance
   hdl := GetCurrentProcess;
-  if not CheckPrevious.RestoreIfRunning(hdl, 1) then
+  if CheckPrevious.RestoreIfRunning(hdl, 1) then
+  	showMessage('The program "' + ParamStr(0) + '" is already running.')
+  else
   begin
     Application.Initialize;
     Application.ShowMainForm := False;
