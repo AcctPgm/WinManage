@@ -240,7 +240,7 @@ object frmMain: TfrmMain
     Columns = <    
       item
         Title.Caption = 'Icon'
-        Width = 28
+        Width = 34
       end    
       item
         Title.Caption = 'Program'
@@ -270,7 +270,7 @@ object frmMain: TfrmMain
     OnDrawCell = sgdProgsDrawCell
     OnMouseMove = sgdProgsMouseMove
     ColWidths = (
-      28
+      34
       199
       217
       71

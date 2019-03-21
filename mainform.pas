@@ -95,6 +95,7 @@ begin
   LoadOptions;
   CloseAllowed := CloseFromForm;
 
+  sgdProgs.Cells[colIcon, 0] := '';
   sgdProgs.Cells[colName,	 0] := 'Program';
   sgdProgs.Cells[colTitle, 0] := 'Title';
   sgdProgs.Cells[colPosition, 0] := 'Position';
@@ -192,7 +193,7 @@ begin
   AGrid:=TStringGrid(Sender);
 
   if gdFixed in aState then //if is fixed use the clBtnFace color
-//    AGrid.Canvas.Brush.Color := clBtnFace
+    AGrid.Canvas.Brush.Color := clBtnFace
   else
     if aRow = sgdProgs.Row then
       AGrid.Canvas.Brush.Color := $00A8FFFF
@@ -200,7 +201,11 @@ begin
       AGrid.Canvas.Brush.Color := clWindow;
 
   AGrid.Canvas.FillRect(aRect);
-  AGrid.Canvas.TextOut(aRect.Left + 2, aRect.Top + 2, AGrid.Cells[ACol, ARow]);
+  if (aCol = colIcon) and (aRow > 0) then
+		AGrid.Canvas.Draw(aRect.Left + 1, aRect.Top + 1,
+	    TWinfo(sgdProgs.Objects[colName, aRow]).wIcon)
+  else
+	  AGrid.Canvas.TextOut(aRect.Left + 2, aRect.Top + 2, AGrid.Cells[ACol, ARow]);
 end;
 
 procedure TfrmMain.sgdProgsMouseMove(Sender: TObject; Shift: TShiftState; X,
