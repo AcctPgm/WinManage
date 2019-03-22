@@ -9,6 +9,9 @@ uses
   Dialogs, Graphics,
   TypeUnit;
 
+const
+	ICON_SMALL2 = 2;
+
 function EnumWindowsToStrList(handle:hwnd; lP:LPARAM):LongBool;stdcall;
 function ProcessFileName(PID: DWORD): string;
 function GetFileNameFromHandle(Handle: hwnd):string;
@@ -69,10 +72,17 @@ begin
             wProgPath := Copy(wName, 1, length(wName));
 
           // Icon for the program
-          HIco := SendMessage(handle, WM_GETICON, ICON_SMALL, 0);
+					HIco := SendMessage(wHandle, WM_GETICON, ICON_SMALL2, 0);
           if HIco = 0 then
-            HIco := SendMessage(handle, WM_GETICON, ICON_BIG, 0);
-          wIcon := TIcon.Create;
+            HIco := SendMessage(wHandle, WM_GETICON, ICON_SMALL, 0);
+          if HIco = 0 then
+            HIco := SendMessage(wHandle, WM_GETICON, ICON_BIG, 0);
+          if HIco = 0 then
+            HIco := GetClassLongPtr(wHandle, GCL_HICON);
+          if HIco = 0 then
+            HIco := GetClassLongPtr(wHandle, GCL_HICONSM);
+
+					wIcon := TIcon.Create;
           wIcon.ReleaseHandle;
           wIcon.Handle := HIco;
         end;
