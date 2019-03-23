@@ -5,7 +5,7 @@ unit TypeUnit;
 interface
 
 uses
-  Classes, SysUtils, Windows;
+  Classes, SysUtils, Windows, Graphics;
 
 type
 
@@ -20,6 +20,7 @@ type
     wWidth: integer;
     wHandle: hwnd;
     wProgPath: string;
+    wIcon: TIcon;
   end;
 
   TMoveInfo = class(TObject)
@@ -31,7 +32,19 @@ type
     mTag: integer;
   end;
 
+var
+  colIcon, colName, colTitle, colPosition, colSize : longint;
+
 implementation
+
+initialization
+begin
+	colIcon := 0;
+	colName := 1;
+  colTitle := 2;
+  colPosition := 3;
+  colSize := 4;
+end;
 
 end.
 

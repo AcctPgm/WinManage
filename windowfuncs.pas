@@ -6,8 +6,11 @@ interface
 
 uses
   Classes, SysUtils, Windows, JwaTlHelp32, JwaPsAPI, FileUtil,
-  TypeUnit,
-  Dialogs;
+  Dialogs, Graphics,
+  TypeUnit;
+
+const
+	ICON_SMALL2 = 2;
 
 function EnumWindowsToStrList(handle:hwnd; lP:LPARAM):LongBool;stdcall;
 function ProcessFileName(PID: DWORD): string;
@@ -24,11 +27,14 @@ var
   rect: TRect;
   text: array [0..255] of char;
   tw: TWinfo;
+
+  HIco: HICON;
+//  Icon: TIcon;
 begin
   if IsWindowVisible(handle) and
-    (GetWindowLong(handle,GWL_EXSTYLE) AND WS_EX_TOOLWINDOW = 0) and  // Not a tool window
-//    (GetWindow(handle,GW_OWNER) = 0) and                      //Not owned by other windows
-    (GetParent(handle) = 0)          and                      //Does not have any parent
+		(GetWindowLong(handle,GWL_EXSTYLE) AND WS_EX_TOOLWINDOW = 0) and  // Not a tool window
+//    (GetWindow(handle,GW_OWNER) = 0) and														//Not owned by other windows
+		(GetParent(handle) = 0) and																				//Does not have any parent
     (GetWindowText(handle, text, sizeOf(text) - 1) <> 0) then
   begin
     // filter out Win8+ 'Modern App' windows that aren't real (visible) windows
@@ -45,9 +51,12 @@ begin
 
         with tw do
         begin
+          // Program running in the window, i.e. exe file anem
           wName := GetFileNameFromHandle(handle);
+          // Window title
           wWinTitle := text;
 
+          // Window location and dimensions
           wTop := rect.Top;
           wLeft := rect.Left;
           wBottom := rect.Bottom;
@@ -56,10 +65,24 @@ begin
           wWidth := wRight - wLeft;
           wHandle := handle;
 
+          // Full name and path of the exe for tooltip
           GetWindowThreadProcessID(Handle, @PID);
           wProgPath := ProcessFileName(PID);
           if length(wProgPath) = 0 then
             wProgPath := Copy(wName, 1, length(wName));
+
+          // Icon for the program
+          HIco := GetClassLongPtr(wHandle, GCL_HICONSM);
+          if HIco = 0 then
+            HIco := GetClassLongPtr(wHandle, GCL_HICON);
+          if HIco = 0 then
+            HIco := SendMessage(wHandle, WM_GETICON, ICON_SMALL, 0);
+          if HIco = 0 then
+            HIco := SendMessage(wHandle, WM_GETICON, ICON_BIG, 0);
+
+          wIcon := TIcon.Create;
+          wIcon.ReleaseHandle;
+          wIcon.Handle := HIco;
         end;
 
         sl := TStringList(lp);

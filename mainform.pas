@@ -95,10 +95,11 @@ begin
   LoadOptions;
   CloseAllowed := CloseFromForm;
 
-  sgdProgs.Cells[0, 0] := 'Program';
-  sgdProgs.Cells[1, 0] := 'Title';
-  sgdProgs.Cells[2, 0] := 'Position';
-  sgdProgs.Cells[3, 0] := 'Size';
+  sgdProgs.Cells[colIcon, 0] := '';
+  sgdProgs.Cells[colName,	 0] := 'Program';
+  sgdProgs.Cells[colTitle, 0] := 'Title';
+  sgdProgs.Cells[colPosition, 0] := 'Position';
+  sgdProgs.Cells[colSize, 0] := 'Size';
 
   if ShowOnStartup then
     Show;
@@ -192,7 +193,7 @@ begin
   AGrid:=TStringGrid(Sender);
 
   if gdFixed in aState then //if is fixed use the clBtnFace color
-//    AGrid.Canvas.Brush.Color := clBtnFace
+    AGrid.Canvas.Brush.Color := clBtnFace
   else
     if aRow = sgdProgs.Row then
       AGrid.Canvas.Brush.Color := $00A8FFFF
@@ -200,7 +201,20 @@ begin
       AGrid.Canvas.Brush.Color := clWindow;
 
   AGrid.Canvas.FillRect(aRect);
-  AGrid.Canvas.TextOut(aRect.Left + 2, aRect.Top + 2, AGrid.Cells[ACol, ARow]);
+  if (aCol = colIcon) and (aRow > 0) then
+    if TWinfo(sgdProgs.Objects[colName, aRow]).wIcon.Width = 16 then
+	    AGrid.Canvas.Draw(aRect.Left + 1, aRect.Top + 1,
+      	TWinfo(sgdProgs.Objects[colName, aRow]).wIcon)
+    else
+    begin
+      aRect.Left := aRect.Left + 1;
+      aRect.Top := aRect.Top + 1;
+      aRect.Right := aRect.Left + 16;
+      aRect.Bottom := aRect.Top + 16;
+      AGrid.Canvas.StretchDraw(aRect, TWinfo(sgdProgs.Objects[colName, aRow]).wIcon);
+    end
+  else
+	  AGrid.Canvas.TextOut(aRect.Left + 2, aRect.Top + 2, AGrid.Cells[aCol, aRow]);
 end;
 
 procedure TfrmMain.sgdProgsMouseMove(Sender: TObject; Shift: TShiftState; X,
@@ -216,7 +230,7 @@ begin
       LastHintRow := R;
       Application.CancelHint;
       if R > 0 then
-        sgdProgs.Hint := TWinfo(sgdProgs.Objects[0, R]).wProgPath
+        sgdProgs.Hint := TWinfo(sgdProgs.Objects[colName, R]).wProgPath
       else
         sgdProgs.Hint := '';
     end;
@@ -337,7 +351,7 @@ begin
     Matches := 0;
     for i := 0 to (Sections.Count - 1) do
     begin
-      FullPath := TWinfo(sgdProgs.Objects[0, sgdProgs.Row]).wProgPath;
+      FullPath := TWinfo(sgdProgs.Objects[colName, sgdProgs.Row]).wProgPath;
       s := Copy(Sections.Strings[i], 1, Length(FullPath));
       if (CompareText(s, FullPath) = 0) then
       begin
@@ -396,16 +410,16 @@ begin
         mniItem.OnClick := @mniItemClick;
 
         Moves := TMoveInfo.Create;
-        Moves.mHandle := TWinfo(sgdProgs.Objects[0, R]).wHandle;
+        Moves.mHandle := TWinfo(sgdProgs.Objects[colName, R]).wHandle;
         Moves.mLeft := iLeft;
         Moves.mTop := iTop;
         Moves.mWidth := iWidth;
         Moves.mHeight := iHeight;
         Moves.mTag := Matches;
-        if (TWinfo(sgdProgs.Objects[0, R]).wLeft = iLeft) and
-            (TWinfo(sgdProgs.Objects[0, R]).wTop = iTop) and
-            (TWinfo(sgdProgs.Objects[0, R]).wWidth = iWidth) and
-            (TWinfo(sgdProgs.Objects[0, R]).wHeight = iHeight) then
+        if (TWinfo(sgdProgs.Objects[colName, R]).wLeft = iLeft) and
+            (TWinfo(sgdProgs.Objects[colName, R]).wTop = iTop) and
+            (TWinfo(sgdProgs.Objects[colName, R]).wWidth = iWidth) and
+            (TWinfo(sgdProgs.Objects[colName, R]).wHeight = iHeight) then
           mniItem.Checked := True;
         stlPositions.AddObject(IntToStr(Matches), Moves);
 
@@ -442,7 +456,7 @@ begin
     MaxItem := -1;
     for i := 0 to (Sections.Count - 1) do
     begin
-      ProgPath := TWinfo(sgdProgs.Objects[0, sgdProgs.Row]).wProgPath;
+      ProgPath := TWinfo(sgdProgs.Objects[colName, sgdProgs.Row]).wProgPath;
       s := Copy(Sections.Strings[i], 1, Length(ProgPath));
       if (CompareText(s, ProgPath) = 0) then
       begin
@@ -461,18 +475,18 @@ begin
     else
       DefaultComment := 'Position ' + IntToStr(Matches + 1);
 
-    if frmSaveForm.ConfirmSave(TWinfo(sgdProgs.Objects[0, sgdProgs.Row]), DefaultComment) then
+    if frmSaveForm.ConfirmSave(TWinfo(sgdProgs.Objects[colName, sgdProgs.Row]), DefaultComment) then
     begin
       Close;
 
-      ProgPath := TWinfo(sgdProgs.Objects[0, sgdProgs.Row]).wProgPath;
+      ProgPath := TWinfo(sgdProgs.Objects[colName, sgdProgs.Row]).wProgPath;
       Section := ProgPath + ';' + IntToStr(MaxItem + 1);
       MyIni.WriteString(Section, 'Comment', frmSaveForm.GetComment);
 
-      MyIni.WriteInteger(Section, 'Left', TWinfo(sgdProgs.Objects[0, sgdProgs.Row]).wLeft);
-      MyIni.WriteInteger(Section, 'Top', TWinfo(sgdProgs.Objects[0, sgdProgs.Row]).wTop);
-      MyIni.WriteInteger(Section, 'Width', TWinfo(sgdProgs.Objects[0, sgdProgs.Row]).wWidth);
-      MyIni.WriteInteger(Section, 'Height', TWinfo(sgdProgs.Objects[0, sgdProgs.Row]).wHeight);
+      MyIni.WriteInteger(Section, 'Left', TWinfo(sgdProgs.Objects[colName, sgdProgs.Row]).wLeft);
+      MyIni.WriteInteger(Section, 'Top', TWinfo(sgdProgs.Objects[colName, sgdProgs.Row]).wTop);
+      MyIni.WriteInteger(Section, 'Width', TWinfo(sgdProgs.Objects[colName, sgdProgs.Row]).wWidth);
+      MyIni.WriteInteger(Section, 'Height', TWinfo(sgdProgs.Objects[colName, sgdProgs.Row]).wHeight);
     end;
   finally
     MyIni.Free;
@@ -508,13 +522,13 @@ begin
 
     with TWinfo(stlWindows.Objects[i]) do
     begin
-      sgdProgs.Cells[0, NewRow] := wName;
-      sgdProgs.Cells[1, NewRow] := wWinTitle;
-      sgdProgs.Cells[2, NewRow] := IntToStr(wLeft) + ', ' + IntToStr(wTop);
-      sgdProgs.Cells[3, NewRow] := IntToStr(wWidth) + ' x ' + IntToStr(wHeight);
+      sgdProgs.Cells[colName, NewRow] := wName;
+      sgdProgs.Cells[colTitle, NewRow] := wWinTitle;
+      sgdProgs.Cells[colPosition, NewRow] := IntToStr(wLeft) + ', ' + IntToStr(wTop);
+      sgdProgs.Cells[colSize, NewRow] := IntToStr(wWidth) + ' x ' + IntToStr(wHeight);
     end;
 
-    sgdProgs.Objects[0, NewRow] := TWinfo(stlWindows.Objects[i]);
+    sgdProgs.Objects[colName, NewRow] := TWinfo(stlWindows.Objects[i]);
   end;
 end;
 
