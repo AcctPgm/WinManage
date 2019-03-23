@@ -32,9 +32,9 @@ var
 //  Icon: TIcon;
 begin
   if IsWindowVisible(handle) and
-    (GetWindowLong(handle,GWL_EXSTYLE) AND WS_EX_TOOLWINDOW = 0) and  // Not a tool window
-//    (GetWindow(handle,GW_OWNER) = 0) and                      //Not owned by other windows
-    (GetParent(handle) = 0)          and                      //Does not have any parent
+		(GetWindowLong(handle,GWL_EXSTYLE) AND WS_EX_TOOLWINDOW = 0) and  // Not a tool window
+//    (GetWindow(handle,GW_OWNER) = 0) and														//Not owned by other windows
+		(GetParent(handle) = 0) and																				//Does not have any parent
     (GetWindowText(handle, text, sizeOf(text) - 1) <> 0) then
   begin
     // filter out Win8+ 'Modern App' windows that aren't real (visible) windows
@@ -72,17 +72,15 @@ begin
             wProgPath := Copy(wName, 1, length(wName));
 
           // Icon for the program
-					HIco := SendMessage(wHandle, WM_GETICON, ICON_SMALL2, 0);
+          HIco := GetClassLongPtr(wHandle, GCL_HICONSM);
+          if HIco = 0 then
+            HIco := GetClassLongPtr(wHandle, GCL_HICON);
           if HIco = 0 then
             HIco := SendMessage(wHandle, WM_GETICON, ICON_SMALL, 0);
           if HIco = 0 then
             HIco := SendMessage(wHandle, WM_GETICON, ICON_BIG, 0);
-          if HIco = 0 then
-            HIco := GetClassLongPtr(wHandle, GCL_HICON);
-          if HIco = 0 then
-            HIco := GetClassLongPtr(wHandle, GCL_HICONSM);
 
-					wIcon := TIcon.Create;
+          wIcon := TIcon.Create;
           wIcon.ReleaseHandle;
           wIcon.Handle := HIco;
         end;

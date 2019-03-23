@@ -202,10 +202,19 @@ begin
 
   AGrid.Canvas.FillRect(aRect);
   if (aCol = colIcon) and (aRow > 0) then
-		AGrid.Canvas.Draw(aRect.Left + 1, aRect.Top + 1,
-	    TWinfo(sgdProgs.Objects[colName, aRow]).wIcon)
+    if TWinfo(sgdProgs.Objects[colName, aRow]).wIcon.Width = 16 then
+	    AGrid.Canvas.Draw(aRect.Left + 1, aRect.Top + 1,
+      	TWinfo(sgdProgs.Objects[colName, aRow]).wIcon)
+    else
+    begin
+      aRect.Left := aRect.Left + 1;
+      aRect.Top := aRect.Top + 1;
+      aRect.Right := aRect.Left + 16;
+      aRect.Bottom := aRect.Top + 16;
+      AGrid.Canvas.StretchDraw(aRect, TWinfo(sgdProgs.Objects[colName, aRow]).wIcon);
+    end
   else
-	  AGrid.Canvas.TextOut(aRect.Left + 2, aRect.Top + 2, AGrid.Cells[ACol, ARow]);
+	  AGrid.Canvas.TextOut(aRect.Left + 2, aRect.Top + 2, AGrid.Cells[aCol, aRow]);
 end;
 
 procedure TfrmMain.sgdProgsMouseMove(Sender: TObject; Shift: TShiftState; X,
