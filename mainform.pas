@@ -435,6 +435,7 @@ end;
 procedure TfrmMain.mniSaveClick(Sender: TObject);
 var
   DefaultComment: string;
+  DefaultName: string;
   FullIniPath: string;
   i: integer;
   ItemNum: integer;
@@ -468,6 +469,7 @@ begin
       end;
     end;
 
+    // Default comment based on the number of entries for the program
     if Matches = 0 then
       DefaultComment := 'Primary'
     else if Matches = 1 then
@@ -475,13 +477,21 @@ begin
     else
       DefaultComment := 'Position ' + IntToStr(Matches + 1);
 
-    if frmSaveForm.ConfirmSave(TWinfo(sgdProgs.Objects[colName, sgdProgs.Row]), DefaultComment) then
+    // Default display name for the program
+    // If there is no existing display name, use the program name (.exe)
+    DefaultName := MyIni.ReadString('Display Names', TWinfo(sgdProgs.Objects[colName, sgdProgs.Row]).wProgPath,
+			TWinfo(sgdProgs.Objects[colName, sgdProgs.Row]).wName);
+
+    if frmSaveForm.ConfirmSave(TWinfo(sgdProgs.Objects[colName, sgdProgs.Row]), DefaultComment, DefaultName) then
     begin
       Close;
 
       ProgPath := TWinfo(sgdProgs.Objects[colName, sgdProgs.Row]).wProgPath;
       Section := ProgPath + ';' + IntToStr(MaxItem + 1);
       MyIni.WriteString(Section, 'Comment', frmSaveForm.GetComment);
+
+      if frmSaveForm.GetDisplayName <> DefaultName then
+      	MyIni.WriteString('Display Names', TWinfo(sgdProgs.Objects[colName, sgdProgs.Row]).wProgPath, frmSaveForm.GetDisplayName);
 
       MyIni.WriteInteger(Section, 'Left', TWinfo(sgdProgs.Objects[colName, sgdProgs.Row]).wLeft);
       MyIni.WriteInteger(Section, 'Top', TWinfo(sgdProgs.Objects[colName, sgdProgs.Row]).wTop);
@@ -506,6 +516,8 @@ procedure TfrmMain.GetOpenWindows;
 var
   i: integer;
   NewRow: integer;
+  MyIni: TIniFile;
+  AltName: string;
 begin
   // Clear the window list & grid
   stlWindows.Clear;
@@ -515,20 +527,31 @@ begin
   EnumWindows(@EnumWindowsToStrList, lparam(stlWindows));
 
   // Add the open window information to the grid
-  for i:= 0 to stlWindows.Count - 1 do
-  begin
-    sgdProgs.RowCount := sgdProgs.RowCount + 1;
-    NewRow := sgdProgs.RowCount - 1;
+  try
+    MyIni := TIniFile.Create(GetIniFileName);
 
-    with TWinfo(stlWindows.Objects[i]) do
+    for i:= 0 to stlWindows.Count - 1 do
     begin
-      sgdProgs.Cells[colName, NewRow] := wName;
-      sgdProgs.Cells[colTitle, NewRow] := wWinTitle;
-      sgdProgs.Cells[colPosition, NewRow] := IntToStr(wLeft) + ', ' + IntToStr(wTop);
-      sgdProgs.Cells[colSize, NewRow] := IntToStr(wWidth) + ' x ' + IntToStr(wHeight);
-    end;
+      sgdProgs.RowCount := sgdProgs.RowCount + 1;
+      NewRow := sgdProgs.RowCount - 1;
 
-    sgdProgs.Objects[colName, NewRow] := TWinfo(stlWindows.Objects[i]);
+      with TWinfo(stlWindows.Objects[i]) do
+      begin
+        AltName := MyIni.ReadString('Display Names', wProgPath, '');
+        if AltName = '' then
+	        sgdProgs.Cells[colName, NewRow] := wName
+        else
+	        sgdProgs.Cells[colName, NewRow] := AltName;
+
+        sgdProgs.Cells[colTitle, NewRow] := wWinTitle;
+        sgdProgs.Cells[colPosition, NewRow] := IntToStr(wLeft) + ', ' + IntToStr(wTop);
+        sgdProgs.Cells[colSize, NewRow] := IntToStr(wWidth) + ' x ' + IntToStr(wHeight);
+      end;
+
+      sgdProgs.Objects[colName, NewRow] := TWinfo(stlWindows.Objects[i]);
+    end;
+  finally
+    MyIni.free;
   end;
 end;
 

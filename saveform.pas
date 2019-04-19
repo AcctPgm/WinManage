@@ -17,12 +17,14 @@ type
     btnSave: TButton;
     btnCancel: TButton;
     ediComment: TEdit;
+    ediDisplayName: TEdit;
     Label1: TLabel;
     Label2: TLabel;
     Label3: TLabel;
     Label4: TLabel;
     Label5: TLabel;
     Label6: TLabel;
+    Label7: TLabel;
     lblHeight: TLabel;
     lblWidth: TLabel;
     lblTop: TLabel;
@@ -32,10 +34,11 @@ type
     procedure btnCancelClick(Sender: TObject);
     procedure btnSaveClick(Sender: TObject);
 
-    function ConfirmSave(info: TWinfo; DefaultComment: string): Boolean;
+    function ConfirmSave(info: TWinfo; DefaultComment: string; DefaultName: string): Boolean;
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormShow(Sender: TObject);
     function GetComment: string;
+    function GetDisplayName: string;
   private
     { private declarations }
     DoSave: Boolean;
@@ -130,7 +133,7 @@ begin
   DoSave := False;
 end;
 
-function TfrmSaveForm.ConfirmSave(info: TWinfo; DefaultComment: string): Boolean;
+function TfrmSaveForm.ConfirmSave(info: TWinfo; DefaultComment: string; DefaultName: string): Boolean;
 begin
   lblProgram.Caption := info.wProgPath;
   lblLeft.Caption := IntToStr(info.wLeft);
@@ -139,6 +142,7 @@ begin
   lblHeight.Caption := IntToStr(info.wHeight);
 
   ediComment.Caption := DefaultComment;
+  ediDisplayName.Caption := DefaultName;
   ActiveControl := ediComment;
 
   DoSave := False;
@@ -151,6 +155,11 @@ end;
 function TfrmSaveForm.GetComment: string;
 begin
   Result := ediComment.Caption;
+end;
+
+function TfrmSaveForm.GetDisplayName: string;
+begin
+  Result := ediDisplayName.Caption;
 end;
 
 end.

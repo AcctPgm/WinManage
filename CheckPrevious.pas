@@ -15,7 +15,7 @@ type
   end;
 
 const
-  MappingName = 'df85dfdd-6352-42c7-b578-851cad213f7e';
+  MappingName = 'df85dfdd-6352-42c7-b578-851cad213f7e-X';
 
 var
   MappingHandle: THandle;
