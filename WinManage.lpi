@@ -20,7 +20,7 @@
     <VersionInfo>
       <UseVersionInfo Value="True"/>
       <MajorVersionNr Value="1"/>
-      <StringTable Comments="Freeware" FileDescription="Manage window sizes and placement" LegalCopyright="(c) 2019 by Kenneth Parker" ProductName="WinManage" ProductVersion="0.9.0"/>
+      <StringTable Comments="Freeware" FileDescription="Manage window sizes and placement" LegalCopyright="(c) 2019 by Kenneth Parker" ProductName="WinManage" ProductVersion="1.0.0"/>
     </VersionInfo>
     <BuildModes Count="1">
       <Item1 Name="Default" Default="True"/>
