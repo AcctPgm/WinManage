@@ -16,6 +16,13 @@ const
 
 implementation
 
+// Return the name of WinManage's ini file.
+// If a path was specified on the command line, use it.
+// Otherwise, the path is the user's AppData\WinManage.
+// If the path doesn't exist, create it.
+// The ini file name is always WinManage.ini to avoid accientally using an ini
+// file belonging to another program.
+
 function GetIniFileName: string;
 begin
   // Default path is the default folder name under the AppData folder

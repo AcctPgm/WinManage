@@ -51,7 +51,7 @@ begin
 
         with tw do
         begin
-          // Program running in the window, i.e. exe file anem
+          // Program running in the window, i.e. exe file name
           wName := GetFileNameFromHandle(handle);
           // Window title
           wWinTitle := text;

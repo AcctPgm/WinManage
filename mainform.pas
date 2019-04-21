@@ -64,6 +64,9 @@ type
 
     LastHintRow: integer;
 
+    ExistingItem: string;
+    ExistingComment: string;
+
     procedure GetOpenWindows;
   public
     { public declarations }
@@ -95,6 +98,7 @@ begin
   LoadOptions;
   CloseAllowed := CloseFromForm;
 
+  // Labels in the title row
   sgdProgs.Cells[colIcon, 0] := '';
   sgdProgs.Cells[colName,	 0] := 'Program';
   sgdProgs.Cells[colTitle, 0] := 'Title';
@@ -149,7 +153,6 @@ end;
 
 procedure TfrmMain.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 var
-  FullIniPath: string;
   MyIni: TIniFile;
 begin
   // Determine whether to close or just hide the form
@@ -162,7 +165,7 @@ begin
     CloseAction := caHide;
 
   // Save the form position
-  if RememberFormPositions and (Left <> InitialLeft) and (Top <> InitialTop) then
+  if RememberFormPositions and ((Left <> InitialLeft) or (Top <> InitialTop)) then
   begin
     try
       MyIni := TIniFile.Create(GetIniFileName);
@@ -309,11 +312,14 @@ begin
   end;
 end;
 
+// Create and display the context menu for the right-clicked window
+// First item is always 'Save', and if there are ini entries for the program,
+// a separator line and each of the entries
 procedure TfrmMain.sgdProgsContextPopup(Sender: TObject; MousePos: TPoint;
   var Handled: Boolean);
 var
   C, R: integer;
-  mniItem: TMenuItem;
+  mniSave, mniItem: TMenuItem;
 
   FullPath: String;
   i: Integer;
@@ -328,18 +334,25 @@ var
 const
   defaultIkey = -9999;
 begin
+	// Determine which row, ie program window, was clicked on
   sgdProgs.MouseToCell(MousePos.X, MousePos.Y, C, R);
   sgdProgs.Row := R;
 
+  // Clear any previous menu entries
   mnuGridMenu.Items.Clear;
+
+  // Clear the number and comment of the entry matching the clicked window
+  ExistingItem := '';
+  ExistingComment := '';
 
   stlPositions.Clear;
 
-  mniItem := TMenuItem.Create(mnuGridMenu);
-  mniItem.Caption := 'Save';
-  mniItem.OnClick := @mniSaveClick;
-  mniItem.Tag := R;
-  mnuGridMenu.Items.Add(mniItem);
+  // Create the Save menu item
+  mniSave := TMenuItem.Create(mnuGridMenu);
+  mniSave.Caption := 'Save';
+  mniSave.OnClick := @mniSaveClick;
+  mniSave.Tag := R;
+  mnuGridMenu.Items.Add(mniSave);
 
   try
     MyIni := TIniFile.Create(GetIniFileName);
@@ -420,7 +433,16 @@ begin
             (TWinfo(sgdProgs.Objects[colName, R]).wTop = iTop) and
             (TWinfo(sgdProgs.Objects[colName, R]).wWidth = iWidth) and
             (TWinfo(sgdProgs.Objects[colName, R]).wHeight = iHeight) then
+        begin
           mniItem.Checked := True;
+
+          // Store the tag of the matching menu item to allow a save to overwrite the item
+          ExistingItem := copy(Sections.Strings[i], Length(FullPath) + 2,
+          	Length(Sections.Strings[i]) - Length(FullPath));
+
+          // Store the comment for the matching menu item
+          ExistingComment := MyIni.ReadString(Sections.Strings[i], 'Comment', '?');
+        end;
         stlPositions.AddObject(IntToStr(Matches), Moves);
 
         mnuGridMenu.Items.Add(mniItem);
@@ -436,28 +458,31 @@ procedure TfrmMain.mniSaveClick(Sender: TObject);
 var
   DefaultComment: string;
   DefaultName: string;
-  FullIniPath: string;
   i: integer;
   ItemNum: integer;
   Matches: integer;
   MaxItem: integer;
   MyIni: TIniFile;
   ProgPath: string;
+  ProgWindowInfo: TWinfo;
   s: string;
   Section: string;
   Sections: TStringList;
 begin
+  ProgWindowInfo := TWinfo(sgdProgs.Objects[colName, sgdProgs.Row]);
   try
     MyIni := TIniFile.Create(GetIniFileName);
 
+    // Read all section names from the ini file into a string list
     Sections := TStringList.Create;
     MyIni.ReadSections(Sections);
+
 
     Matches := 0;
     MaxItem := -1;
     for i := 0 to (Sections.Count - 1) do
     begin
-      ProgPath := TWinfo(sgdProgs.Objects[colName, sgdProgs.Row]).wProgPath;
+      ProgPath := ProgWindowInfo.wProgPath;
       s := Copy(Sections.Strings[i], 1, Length(ProgPath));
       if (CompareText(s, ProgPath) = 0) then
       begin
@@ -470,7 +495,9 @@ begin
     end;
 
     // Default comment based on the number of entries for the program
-    if Matches = 0 then
+    if (ExistingComment <> '') and (ExistingComment <> '?') then
+    	DefaultComment := ExistingComment
+    else if Matches = 0 then
       DefaultComment := 'Primary'
     else if Matches = 1 then
       DefaultComment := 'Secondary'
@@ -479,24 +506,27 @@ begin
 
     // Default display name for the program
     // If there is no existing display name, use the program name (.exe)
-    DefaultName := MyIni.ReadString('Display Names', TWinfo(sgdProgs.Objects[colName, sgdProgs.Row]).wProgPath,
-			TWinfo(sgdProgs.Objects[colName, sgdProgs.Row]).wName);
+    DefaultName := MyIni.ReadString('Display Names', ProgWindowInfo.wProgPath,
+			ProgWindowInfo.wName);
 
-    if frmSaveForm.ConfirmSave(TWinfo(sgdProgs.Objects[colName, sgdProgs.Row]), DefaultComment, DefaultName) then
+    if frmSaveForm.ConfirmSave(ProgWindowInfo, DefaultComment, DefaultName) then
     begin
       Close;
 
-      ProgPath := TWinfo(sgdProgs.Objects[colName, sgdProgs.Row]).wProgPath;
-      Section := ProgPath + ';' + IntToStr(MaxItem + 1);
+      ProgPath := ProgWindowInfo.wProgPath;
+      if ExistingItem = '' then
+	      Section := ProgPath + ';' + IntToStr(MaxItem + 1)
+      else
+	      Section := ProgPath + ';' + ExistingItem;
       MyIni.WriteString(Section, 'Comment', frmSaveForm.GetComment);
 
       if frmSaveForm.GetDisplayName <> DefaultName then
-      	MyIni.WriteString('Display Names', TWinfo(sgdProgs.Objects[colName, sgdProgs.Row]).wProgPath, frmSaveForm.GetDisplayName);
+      	MyIni.WriteString('Display Names', ProgWindowInfo.wProgPath, frmSaveForm.GetDisplayName);
 
-      MyIni.WriteInteger(Section, 'Left', TWinfo(sgdProgs.Objects[colName, sgdProgs.Row]).wLeft);
-      MyIni.WriteInteger(Section, 'Top', TWinfo(sgdProgs.Objects[colName, sgdProgs.Row]).wTop);
-      MyIni.WriteInteger(Section, 'Width', TWinfo(sgdProgs.Objects[colName, sgdProgs.Row]).wWidth);
-      MyIni.WriteInteger(Section, 'Height', TWinfo(sgdProgs.Objects[colName, sgdProgs.Row]).wHeight);
+      MyIni.WriteInteger(Section, 'Left', ProgWindowInfo.wLeft);
+      MyIni.WriteInteger(Section, 'Top', ProgWindowInfo.wTop);
+      MyIni.WriteInteger(Section, 'Width', ProgWindowInfo.wWidth);
+      MyIni.WriteInteger(Section, 'Height', ProgWindowInfo.wHeight);
     end;
   finally
     MyIni.Free;
@@ -519,7 +549,7 @@ var
   MyIni: TIniFile;
   AltName: string;
 begin
-  // Clear the window list & grid
+  // Clear the window list & grid (keep only row 1, the heading row)
   stlWindows.Clear;
   sgdProgs.RowCount := 1;
 
@@ -535,8 +565,11 @@ begin
       sgdProgs.RowCount := sgdProgs.RowCount + 1;
       NewRow := sgdProgs.RowCount - 1;
 
+      // Fill the grid with program window info
       with TWinfo(stlWindows.Objects[i]) do
       begin
+      	// Read the display (alternate) name for the program from the ini file
+        // Default to program.exe if there is no alternate name
         AltName := MyIni.ReadString('Display Names', wProgPath, '');
         if AltName = '' then
 	        sgdProgs.Cells[colName, NewRow] := wName
@@ -548,6 +581,7 @@ begin
         sgdProgs.Cells[colSize, NewRow] := IntToStr(wWidth) + ' x ' + IntToStr(wHeight);
       end;
 
+      // Save the TWinfo for the program as the object of the name column
       sgdProgs.Objects[colName, NewRow] := TWinfo(stlWindows.Objects[i]);
     end;
   finally

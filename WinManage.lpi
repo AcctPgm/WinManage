@@ -19,7 +19,7 @@
     </i18n>
     <VersionInfo>
       <UseVersionInfo Value="True"/>
-      <MinorVersionNr Value="9"/>
+      <MajorVersionNr Value="1"/>
       <StringTable Comments="Freeware" FileDescription="Manage window sizes and placement" LegalCopyright="(c) 2019 by Kenneth Parker" ProductName="WinManage" ProductVersion="0.9.0"/>
     </VersionInfo>
     <BuildModes Count="1">

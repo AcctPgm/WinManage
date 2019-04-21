@@ -35,10 +35,10 @@ type
 var
   frmOptions: TfrmOptions;
 
-  CloseFromForm: Boolean;
-  ShowOnStartup: Boolean;
-  RememberFormPositions: Boolean;
-  HideOnClickAway: Boolean;
+  CloseFromForm: Boolean = False;
+  ShowOnStartup: Boolean = False;
+  RememberFormPositions: Boolean = False;
+  HideOnClickAway: Boolean = True;
 
 procedure LoadOptions;
 procedure SaveOptions;

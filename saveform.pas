@@ -65,14 +65,6 @@ var
   MyIni: TIniFile;
 //  nt: TNearTray;
 begin
-{  // Get position near the system tray as the default
-  nt := NearTray(Width, Height);
-  if nt.Left <> ntNone then
-  begin
-    Left := nt.Left;
-    Top := nt.Top;
-  end;
-}
   // Position form just above, or just below, program grid on main form as the default
   if (frmMain.Top + frmMain.sgdProgs.Top - Height - 5) > 0 then
     Top := frmMain.Top + frmMain.sgdProgs.Top - Height - 5
