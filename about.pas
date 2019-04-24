@@ -10,7 +10,7 @@ uses
   IniUnit, Options, NearTrayPos;
 
 const
-  VersionNum = '1.0.0';
+  VersionNum = '1.1.0';
 
 type
 

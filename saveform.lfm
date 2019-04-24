@@ -1,12 +1,12 @@
 object frmSaveForm: TfrmSaveForm
   Left = 753
-  Height = 291
+  Height = 308
   Top = 263
   Width = 521
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
-  Caption = 'Confirm Save'
-  ClientHeight = 291
+  Caption = 'WinManage Confirm Save'
+  ClientHeight = 308
   ClientWidth = 521
   Icon.Data = {
     5018000000000100010000000000010008003A1800001600000089504E470D0A
@@ -229,7 +229,8 @@ object frmSaveForm: TfrmSaveForm
     Height = 15
     Top = 72
     Width = 57
-    Caption = 'Comment:'
+    Caption = '&Comment:'
+    FocusControl = ediComment
     ParentColor = False
   end
   object ediComment: TEdit
@@ -239,13 +240,15 @@ object frmSaveForm: TfrmSaveForm
     Top = 64
     Width = 184
     MaxLength = 32
+    ParentShowHint = False
+    ShowHint = True
     TabOrder = 0
     Text = 'ediComment'
   end
   object Label3: TLabel
     Left = 24
     Height = 15
-    Top = 127
+    Top = 154
     Width = 23
     Caption = 'Left:'
     ParentColor = False
@@ -253,7 +256,7 @@ object frmSaveForm: TfrmSaveForm
   object lblLeft: TLabel
     Left = 120
     Height = 15
-    Top = 127
+    Top = 154
     Width = 33
     Caption = 'lblLeft'
     ParentColor = False
@@ -261,7 +264,7 @@ object frmSaveForm: TfrmSaveForm
   object Label4: TLabel
     Left = 24
     Height = 15
-    Top = 151
+    Top = 178
     Width = 23
     Caption = 'Top:'
     ParentColor = False
@@ -269,7 +272,7 @@ object frmSaveForm: TfrmSaveForm
   object lblTop: TLabel
     Left = 120
     Height = 15
-    Top = 151
+    Top = 178
     Width = 33
     Caption = 'lblTop'
     ParentColor = False
@@ -277,7 +280,7 @@ object frmSaveForm: TfrmSaveForm
   object Label5: TLabel
     Left = 24
     Height = 15
-    Top = 175
+    Top = 202
     Width = 35
     Caption = 'Width:'
     ParentColor = False
@@ -285,7 +288,7 @@ object frmSaveForm: TfrmSaveForm
   object lblWidth: TLabel
     Left = 120
     Height = 15
-    Top = 175
+    Top = 202
     Width = 45
     Caption = 'lblWidth'
     ParentColor = False
@@ -293,7 +296,7 @@ object frmSaveForm: TfrmSaveForm
   object Label6: TLabel
     Left = 24
     Height = 15
-    Top = 199
+    Top = 226
     Width = 39
     Caption = 'Height:'
     ParentColor = False
@@ -301,7 +304,7 @@ object frmSaveForm: TfrmSaveForm
   object lblHeight: TLabel
     Left = 120
     Height = 15
-    Top = 199
+    Top = 226
     Width = 49
     Caption = 'lblHeight'
     ParentColor = False
@@ -309,29 +312,30 @@ object frmSaveForm: TfrmSaveForm
   object btnSave: TButton
     Left = 160
     Height = 25
-    Top = 239
+    Top = 266
     Width = 75
     Caption = '&Save'
     Default = True
     OnClick = btnSaveClick
-    TabOrder = 2
+    TabOrder = 3
   end
   object btnCancel: TButton
     Left = 304
     Height = 25
-    Top = 239
+    Top = 266
     Width = 75
     Cancel = True
     Caption = 'Cancel'
     OnClick = btnCancelClick
-    TabOrder = 3
+    TabOrder = 4
   end
   object Label7: TLabel
     Left = 24
     Height = 15
     Top = 103
     Width = 86
-    Caption = 'Displayed Name'
+    Caption = 'Displayed &Name'
+    FocusControl = ediDisplayName
     ParentColor = False
   end
   object ediDisplayName: TEdit
@@ -340,7 +344,18 @@ object frmSaveForm: TfrmSaveForm
     Hint = 'Program name that will be displayed in the grid'
     Top = 95
     Width = 184
+    ParentShowHint = False
+    ShowHint = True
     TabOrder = 1
     Text = 'ediDisplayName'
+  end
+  object cbxSaveOnlyName: TCheckBox
+    Left = 40
+    Height = 19
+    Top = 128
+    Width = 411
+    Caption = '&Only save the Dislay Name (don''t save/change Comment, size or position)'
+    OnChange = cbxSaveOnlyNameChange
+    TabOrder = 2
   end
 end

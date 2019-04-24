@@ -32,6 +32,8 @@ type
     mTag: integer;
   end;
 
+  TSaveWhat = ( svAll, svNameOnly );
+
 var
   colIcon, colName, colTitle, colPosition, colSize : longint;
 

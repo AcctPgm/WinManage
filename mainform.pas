@@ -98,7 +98,7 @@ begin
   LoadOptions;
   CloseAllowed := CloseFromForm;
 
-  // Labels in the title row
+  // Labels in the title (0) row
   sgdProgs.Cells[colIcon, 0] := '';
   sgdProgs.Cells[colName,	 0] := 'Program';
   sgdProgs.Cells[colTitle, 0] := 'Title';
@@ -336,121 +336,124 @@ const
 begin
 	// Determine which row, ie program window, was clicked on
   sgdProgs.MouseToCell(MousePos.X, MousePos.Y, C, R);
-  sgdProgs.Row := R;
+  if R <> 0 then
+  begin
+    sgdProgs.Row := R;
 
-  // Clear any previous menu entries
-  mnuGridMenu.Items.Clear;
+    // Clear any previous menu entries
+    mnuGridMenu.Items.Clear;
 
-  // Clear the number and comment of the entry matching the clicked window
-  ExistingItem := '';
-  ExistingComment := '';
+    // Clear the number and comment of the entry matching the clicked window
+    ExistingItem := '';
+    ExistingComment := '';
 
-  stlPositions.Clear;
+    stlPositions.Clear;
 
-  // Create the Save menu item
-  mniSave := TMenuItem.Create(mnuGridMenu);
-  mniSave.Caption := 'Save';
-  mniSave.OnClick := @mniSaveClick;
-  mniSave.Tag := R;
-  mnuGridMenu.Items.Add(mniSave);
+    // Create the Save menu item
+    mniSave := TMenuItem.Create(mnuGridMenu);
+    mniSave.Caption := 'Save';
+    mniSave.OnClick := @mniSaveClick;
+    mniSave.Tag := R;
+    mnuGridMenu.Items.Add(mniSave);
 
-  try
-    MyIni := TIniFile.Create(GetIniFileName);
-    Sections := TStringList.Create;
+    try
+      MyIni := TIniFile.Create(GetIniFileName);
+      Sections := TStringList.Create;
 
-    MyIni.ReadSections(Sections);
-    Sections.Sorted := True;
+      MyIni.ReadSections(Sections);
+      Sections.Sorted := True;
 
-    Matches := 0;
-    for i := 0 to (Sections.Count - 1) do
-    begin
-      FullPath := TWinfo(sgdProgs.Objects[colName, sgdProgs.Row]).wProgPath;
-      s := Copy(Sections.Strings[i], 1, Length(FullPath));
-      if (CompareText(s, FullPath) = 0) then
+      Matches := 0;
+      for i := 0 to (Sections.Count - 1) do
       begin
-        if Matches = 0 then
+        FullPath := TWinfo(sgdProgs.Objects[colName, sgdProgs.Row]).wProgPath;
+        s := Copy(Sections.Strings[i], 1, Length(FullPath));
+        if (CompareText(s, FullPath) = 0) then
         begin
+          if Matches = 0 then
+          begin
+            mniItem := TMenuItem.Create(mnuGridMenu);
+            mniItem.Caption := '-';
+            mnuGridMenu.Items.Add(mniItem);
+          end;
+          Matches := Matches + 1;
+
           mniItem := TMenuItem.Create(mnuGridMenu);
-          mniItem.Caption := '-';
+
+          // Read position & size info, disable menu choice if any invalid value
+          iLeft := MyIni.ReadInteger(Sections.Strings[i], 'Left', defaultIKey);
+          if iLeft = defaultIkey then
+          begin
+            sLeft := '?';
+            mniItem.Enabled := False;
+          end
+          else
+            sLeft := IntToStr(iLeft);
+
+          iTop := MyIni.ReadInteger(Sections.Strings[i], 'Top', defaultIkey);
+          if iTop = defaultIkey then
+          begin
+            sTop := '?';
+            mniItem.Enabled := False;
+          end
+          else
+            sTop := IntToStr(iTop);
+
+          iWidth := MyIni.ReadInteger(Sections.Strings[i], 'Width', defaultIkey);
+          if iWidth = defaultIkey then
+          begin
+            sWidth := '?';
+            mniItem.Enabled := False;
+          end
+          else
+            sWidth := IntToStr(iWidth);
+
+          iHeight := MyIni.ReadInteger(Sections.Strings[i], 'Height', defaultIkey);
+          if iHeight = defaultIkey then
+          begin
+            sHeight := '?';
+            mniItem.Enabled := False;
+          end
+          else
+            sHeight := IntToStr(iHeight);
+
+          mniItem.Caption := MyIni.ReadString(Sections.Strings[i], 'Comment', '?') +
+            ' - Pos: ' +  sLeft + ', ' + sTop + ';' +
+            ' Size: ' + sWidth + ' x ' + sHeight;
+
+          mniItem.Tag := Matches;
+          mniItem.OnClick := @mniItemClick;
+
+          Moves := TMoveInfo.Create;
+          Moves.mHandle := TWinfo(sgdProgs.Objects[colName, R]).wHandle;
+          Moves.mLeft := iLeft;
+          Moves.mTop := iTop;
+          Moves.mWidth := iWidth;
+          Moves.mHeight := iHeight;
+          Moves.mTag := Matches;
+          if (TWinfo(sgdProgs.Objects[colName, R]).wLeft = iLeft) and
+              (TWinfo(sgdProgs.Objects[colName, R]).wTop = iTop) and
+              (TWinfo(sgdProgs.Objects[colName, R]).wWidth = iWidth) and
+              (TWinfo(sgdProgs.Objects[colName, R]).wHeight = iHeight) then
+          begin
+            mniItem.Checked := True;
+
+            // Store the tag of the matching menu item to allow a save to overwrite the item
+            ExistingItem := copy(Sections.Strings[i], Length(FullPath) + 2,
+          	  Length(Sections.Strings[i]) - Length(FullPath));
+
+            // Store the comment for the matching menu item
+            ExistingComment := MyIni.ReadString(Sections.Strings[i], 'Comment', '?');
+          end;
+          stlPositions.AddObject(IntToStr(Matches), Moves);
+
           mnuGridMenu.Items.Add(mniItem);
         end;
-        Matches := Matches + 1;
-
-        mniItem := TMenuItem.Create(mnuGridMenu);
-
-        // Read position & size info, disable menu choice if any invalid value
-        iLeft := MyIni.ReadInteger(Sections.Strings[i], 'Left', defaultIKey);
-        if iLeft = defaultIkey then
-        begin
-          sLeft := '?';
-          mniItem.Enabled := False;
-        end
-        else
-          sLeft := IntToStr(iLeft);
-
-        iTop := MyIni.ReadInteger(Sections.Strings[i], 'Top', defaultIkey);
-        if iTop = defaultIkey then
-        begin
-          sTop := '?';
-          mniItem.Enabled := False;
-        end
-        else
-          sTop := IntToStr(iTop);
-
-        iWidth := MyIni.ReadInteger(Sections.Strings[i], 'Width', defaultIkey);
-        if iWidth = defaultIkey then
-        begin
-          sWidth := '?';
-          mniItem.Enabled := False;
-        end
-        else
-          sWidth := IntToStr(iWidth);
-
-        iHeight := MyIni.ReadInteger(Sections.Strings[i], 'Height', defaultIkey);
-        if iHeight = defaultIkey then
-        begin
-          sHeight := '?';
-          mniItem.Enabled := False;
-        end
-        else
-          sHeight := IntToStr(iHeight);
-
-        mniItem.Caption := MyIni.ReadString(Sections.Strings[i], 'Comment', '?') +
-          ' - Pos: ' +  sLeft + ', ' + sTop + ';' +
-          ' Size: ' + sWidth + ' x ' + sHeight;
-
-        mniItem.Tag := Matches;
-        mniItem.OnClick := @mniItemClick;
-
-        Moves := TMoveInfo.Create;
-        Moves.mHandle := TWinfo(sgdProgs.Objects[colName, R]).wHandle;
-        Moves.mLeft := iLeft;
-        Moves.mTop := iTop;
-        Moves.mWidth := iWidth;
-        Moves.mHeight := iHeight;
-        Moves.mTag := Matches;
-        if (TWinfo(sgdProgs.Objects[colName, R]).wLeft = iLeft) and
-            (TWinfo(sgdProgs.Objects[colName, R]).wTop = iTop) and
-            (TWinfo(sgdProgs.Objects[colName, R]).wWidth = iWidth) and
-            (TWinfo(sgdProgs.Objects[colName, R]).wHeight = iHeight) then
-        begin
-          mniItem.Checked := True;
-
-          // Store the tag of the matching menu item to allow a save to overwrite the item
-          ExistingItem := copy(Sections.Strings[i], Length(FullPath) + 2,
-          	Length(Sections.Strings[i]) - Length(FullPath));
-
-          // Store the comment for the matching menu item
-          ExistingComment := MyIni.ReadString(Sections.Strings[i], 'Comment', '?');
-        end;
-        stlPositions.AddObject(IntToStr(Matches), Moves);
-
-        mnuGridMenu.Items.Add(mniItem);
       end;
+    finally
+      MyIni.Free;
+      Sections.Free
     end;
-  finally
-    MyIni.Free;
-    Sections.Free
   end;
 end;
 
@@ -511,22 +514,29 @@ begin
 
     if frmSaveForm.ConfirmSave(ProgWindowInfo, DefaultComment, DefaultName) then
     begin
+      // Hide the main form when user chooses to Save settings
       Close;
 
-      ProgPath := ProgWindowInfo.wProgPath;
-      if ExistingItem = '' then
-	      Section := ProgPath + ';' + IntToStr(MaxItem + 1)
-      else
-	      Section := ProgPath + ';' + ExistingItem;
-      MyIni.WriteString(Section, 'Comment', frmSaveForm.GetComment);
+      // Don't save a blank display name, and only save display name if it's changed
+      if frmSaveForm.GetDisplayName <> '' then
+        if frmSaveForm.GetDisplayName <> DefaultName then
+      	  MyIni.WriteString('Display Names', ProgWindowInfo.wProgPath, frmSaveForm.GetDisplayName);
 
-      if frmSaveForm.GetDisplayName <> DefaultName then
-      	MyIni.WriteString('Display Names', ProgWindowInfo.wProgPath, frmSaveForm.GetDisplayName);
+      // Don't save Comment, position, and size if user selected only to save Dispay Name
+      if frmSaveForm.SaveWhat <> svNameOnly then
+      begin
+        ProgPath := ProgWindowInfo.wProgPath;
+        if ExistingItem = '' then
+	        Section := ProgPath + ';' + IntToStr(MaxItem + 1)
+        else
+	        Section := ProgPath + ';' + ExistingItem;
+        MyIni.WriteString(Section, 'Comment', frmSaveForm.GetComment);
 
-      MyIni.WriteInteger(Section, 'Left', ProgWindowInfo.wLeft);
-      MyIni.WriteInteger(Section, 'Top', ProgWindowInfo.wTop);
-      MyIni.WriteInteger(Section, 'Width', ProgWindowInfo.wWidth);
-      MyIni.WriteInteger(Section, 'Height', ProgWindowInfo.wHeight);
+        MyIni.WriteInteger(Section, 'Left', ProgWindowInfo.wLeft);
+        MyIni.WriteInteger(Section, 'Top', ProgWindowInfo.wTop);
+        MyIni.WriteInteger(Section, 'Width', ProgWindowInfo.wWidth);
+        MyIni.WriteInteger(Section, 'Height', ProgWindowInfo.wHeight);
+      end;
     end;
   finally
     MyIni.Free;

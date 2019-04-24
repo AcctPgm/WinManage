@@ -16,6 +16,7 @@ type
   TfrmSaveForm = class(TForm)
     btnSave: TButton;
     btnCancel: TButton;
+    cbxSaveOnlyName: TCheckBox;
     ediComment: TEdit;
     ediDisplayName: TEdit;
     Label1: TLabel;
@@ -33,12 +34,14 @@ type
 
     procedure btnCancelClick(Sender: TObject);
     procedure btnSaveClick(Sender: TObject);
+    procedure cbxSaveOnlyNameChange(Sender: TObject);
 
     function ConfirmSave(info: TWinfo; DefaultComment: string; DefaultName: string): Boolean;
     procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     procedure FormShow(Sender: TObject);
     function GetComment: string;
     function GetDisplayName: string;
+    function SaveWhat: TSaveWhat;
   private
     { private declarations }
     DoSave: Boolean;
@@ -114,6 +117,26 @@ begin
   DoSave := True;
 end;
 
+procedure TfrmSaveForm.cbxSaveOnlyNameChange(Sender: TObject);
+begin
+  if cbxSaveOnlyName.State = cbChecked then
+  begin
+    ediComment.Enabled := False;
+    lblLeft.Enabled := False;
+    lblTop.Enabled := False;
+    lblWidth.Enabled := False;
+    lblHeight.Enabled := False;
+  end
+  else
+  begin
+    ediComment.Enabled := True;
+    lblLeft.Enabled := True;
+    lblTop.Enabled := True;
+    lblWidth.Enabled := True;
+    lblHeight.Enabled := True;
+  end;
+end;
+
 {procedure TfrmSaveForm.Button2Click(Sender: TObject);
 begin
   showMessage('Titlebar height = ' + IntToStr(GetSystemMetrics(SM_CYCAPTION)));
@@ -132,6 +155,9 @@ begin
   lblTop.Caption := IntToStr(info.wTop);
   lblWidth.Caption := IntToStr(info.wWidth);
   lblHeight.Caption := IntToStr(info.wHeight);
+
+  // Reset the Only Save Display Name checkbox
+  cbxSaveOnlyName.State := cbUnchecked;
 
   ediComment.Caption := DefaultComment;
   ediDisplayName.Caption := DefaultName;
@@ -152,6 +178,14 @@ end;
 function TfrmSaveForm.GetDisplayName: string;
 begin
   Result := ediDisplayName.Caption;
+end;
+
+function TfrmSaveForm.SaveWhat: TSaveWhat;
+begin
+  if cbxSaveOnlyName.State = cbChecked then
+  	Result := svNameOnly
+  else
+    Result := svAll;
 end;
 
 end.

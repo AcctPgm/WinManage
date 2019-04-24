@@ -1,6 +1,7 @@
 unit CheckPrevious;
 
 interface
+
 uses Windows, SysUtils;
 
 function RestoreIfRunning(const AppHandle : THandle; MaxInstances : integer = 1) : boolean;
