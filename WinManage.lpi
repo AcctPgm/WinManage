@@ -21,6 +21,7 @@
       <UseVersionInfo Value="True"/>
       <MajorVersionNr Value="1"/>
       <MinorVersionNr Value="1"/>
+      <RevisionNr Value="1"/>
       <StringTable Comments="Freeware" FileDescription="Manage window sizes and placement" LegalCopyright="(c) 2019 by Kenneth Parker" ProductName="WinManage" ProductVersion="1.1.0"/>
     </VersionInfo>
     <BuildModes Count="1">
@@ -67,6 +68,7 @@
     <Linking>
       <Debugging>
         <GenerateDebugInfo Value="False"/>
+        <UseLineInfoUnit Value="False"/>
       </Debugging>
       <Options>
         <Win32>

@@ -334,14 +334,14 @@ var
 const
   defaultIkey = -9999;
 begin
+  // Clear any previous menu entries
+  mnuGridMenu.Items.Clear;
+
 	// Determine which row, ie program window, was clicked on
   sgdProgs.MouseToCell(MousePos.X, MousePos.Y, C, R);
-  if R <> 0 then
+  if (R <> 0) and (sgdProgs.RowCount > 1) then
   begin
     sgdProgs.Row := R;
-
-    // Clear any previous menu entries
-    mnuGridMenu.Items.Clear;
 
     // Clear the number and comment of the entry matching the clicked window
     ExistingItem := '';

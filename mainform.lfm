@@ -2,12 +2,12 @@ object frmMain: TfrmMain
   Left = 858
   Height = 287
   Top = 566
-  Width = 638
+  Width = 641
   BorderIcons = [biSystemMenu]
   BorderStyle = bsSingle
   Caption = 'WinManage'
   ClientHeight = 287
-  ClientWidth = 638
+  ClientWidth = 641
   Icon.Data = {
     5018000000000100010000000000010008003A1800001600000089504E470D0A
     1A0A0000000D49484452000001000000010008060000005C72A8660000180149
@@ -235,7 +235,7 @@ object frmMain: TfrmMain
     Left = 16
     Height = 184
     Top = 40
-    Width = 608
+    Width = 616
     Color = 16777173
     Columns = <    
       item
@@ -256,7 +256,7 @@ object frmMain: TfrmMain
       end    
       item
         Title.Caption = 'Size'
-        Width = 85
+        Width = 83
       end>
     FixedCols = 0
     ParentShowHint = False
@@ -274,7 +274,7 @@ object frmMain: TfrmMain
       199
       222
       71
-      85
+      83
     )
   end
   object Label1: TLabel
